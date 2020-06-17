@@ -1,6 +1,8 @@
 package com.example.mysqlapp;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -33,5 +35,50 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
         onCreate(db);
+    }
+
+     public boolean insertData(String name, String type, String wcare, String scare, String repr){
+        SQLiteDatabase db = this.getWritableDatabase();
+         ContentValues content = new ContentValues();
+         content.put(NAME, name);
+         content.put(TYPE, type);
+         content.put(WINT_CARE, wcare);
+         content.put(SUMM_CARE, scare);
+         content.put(REPRODUCTION, repr);
+         long res = db.insert(TABLE_NAME, null, content);
+         if(res == -1)
+             return false;
+         else
+             return true;
+     }
+
+     public Cursor getAllData(){
+         SQLiteDatabase db = this.getWritableDatabase();
+         Cursor res = db.rawQuery("select * from " + TABLE_NAME, null );
+         return res;
+    }
+
+    public Cursor getNewData(String name, String type, String wcare, String scare, String repr){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null );
+        return res;
+    }
+
+    public boolean updateData(String id, String name, String type, String wcare, String scare, String repr){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(ID, id);
+        content.put(NAME, name);
+        content.put(TYPE, type);
+        content.put(WINT_CARE, wcare);
+        content.put(SUMM_CARE, scare);
+        content.put(REPRODUCTION, repr);
+        db.update(TABLE_NAME, content, "ID = ?", new String[]{ id });
+        return true;
+    }
+
+    public Integer deleteData(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME, "ID = ?", new String[]{ id });
     }
 }
